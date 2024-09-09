@@ -1,0 +1,12 @@
+name: deseq2-1.42.0
+channels:
+  - default
+  - bioconda
+  - conda-forge
+dependencies:
+  - bioconductor-deseq2=1.42.0
+  - bioconductor-tximportdata=1.30.0
+  - bioconductor-tximport=1.30.0
+  - bioconductor-rhdf5=2.46.1
+  - r-readr=2.1.5
+  - r-tidyverse=2.0.0

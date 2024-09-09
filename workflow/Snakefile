@@ -1,0 +1,51 @@
+# ADAPTED FROM: https://github.com/kristinassong/RNAseq
+
+import os
+import pandas as pd
+
+__author__ = "Kristina Sungeun Song"
+__email__ = "kristina.song@usherbrooke.ca"
+
+configfile: "config/config.yaml"
+
+
+#############################
+## Samples Information
+#############################
+
+SAMPLES = config["samples"]
+
+resultdir = config['path']['resultdir']
+
+df = pd.read_csv('config/comparisons.tsv', sep=r'\s+')
+comparisons = ["%s-%s" % (cdn1,cdn2) for [cdn1, cdn2] in df.values.tolist()]
+
+df_cond = pd.read_csv('config/design.tsv', sep=r'\s+', usecols=['sample','condition'])
+conditions = df_cond['condition'].unique().tolist()
+
+#############################
+## Load rules
+#############################
+
+include: "rules/trim.smk"
+include: "rules/align.smk"
+include: "rules/quantification.smk"
+include: "rules/diffexp.smk"
+include: "rules/plots.smk"
+include: "rules/splicing.smk"
+
+
+#############################
+## Target rules
+#############################
+
+rule all:
+    input:
+        bedgraphs = expand(resultdir+"/genomecov/{sample}.bedgraph", sample=SAMPLES),
+        rMATS = expand(resultdir+"/rmats/{comp}/filtered/SE.tsv", comp=comparisons),
+        pca = expand(resultdir+"/pca/pca_{comp}.svg", comp=comparisons), # pca.py script specific for NC vs KD conditions; Modify as needed,
+        multiqc = resultdir+"/multiqc/multiqc_report.html",
+        volcano_plot = expand(resultdir+"/deseq2/{comp}.svg", comp=comparisons),
+        gene_quant = expand(resultdir+"/deseq2/gene_level_abundance.tsv"),
+        #GO = expand(resultdir+"/GO/GO_{comp}_{change}.svg", comp=comparisons, change=['up','down']) # NEED INTERNET CONNECTION
+        #rMATS_paired = expand(resultdir+"/rmats_paired/{comp}/filtered/SE.tsv", comp=comparisons)

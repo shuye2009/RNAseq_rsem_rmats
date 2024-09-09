@@ -1,0 +1,10 @@
+name: polars-0.20.7
+channels:
+  - default
+  - conda-forge
+  - bioconda
+dependencies:
+  - numpy=1.26.3
+  - pandas=2.1.4
+  - polars=0.20.7
+  - gtfparse=2.5.0

@@ -1,0 +1,79 @@
+{
+    "__default__" :
+    {
+        "account" : "hakemgroup",
+        "partition" : "all",
+        "job-name": "smk_{rule}_{wildcards}",
+        "time" : "3:00:00", # time limit for each job
+        "nodes" : 1,
+        "memory" : "20G",
+        "ntasks-per-node" : 1, # Request n cores be allocated per node.
+        "chdir" : "~/slurm_out",
+        "output" : "{rule}.{wildcards}.out",
+        "error" : "{rule}.{wildcards}.out"
+    },
+
+    "star_index" :
+    {
+        "partition" : "veryhimem",
+        "time" : "1-3:00:00", # time limit for each job
+        "memory" : "100G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
+    "star_align" :
+    {
+        "partition" : "veryhimem",
+        "time" : "1-3:00:00", # time limit for each job
+        "memory" : "100G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
+    "rmats" :
+    {
+        "partition" : "veryhimem",
+        "time" : "1-3:00:00", # time limit for each job
+        "memory" : "200G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
+    "filter_rmats" :
+    {
+        "partition" : "himem",
+        "time" : "3:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
+    "volcano_plot" :
+    {
+        "partition" : "himem",
+        "time" : "3:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
+    "merge_kallisto_quant" :
+    {
+        "partition" : "himem",
+        "time" : "10:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
+    "trimmomatic" :
+    {
+        "partition" : "himem",
+        "time" : "10:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 8, # Request n cores be allocated per node.
+    },
+
+    "kallisto_quant" :
+    {
+        "partition" : "himem",
+        "time" : "10:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+}

@@ -1,0 +1,5 @@
+name: confflinks-2.2.1
+channels:
+  - bioconda
+dependencies:
+  - cufflinks=2.2.1

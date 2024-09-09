@@ -1,0 +1,15 @@
+jobs: 999
+immediate-submit: True
+latency-wait: 120
+notemp: True
+use-conda: True
+cluster-config: "/cluster/home/t128737uhn/snakemake_pipelines/RNAseq/profile_slurm/profile_workflow/cluster.json"
+slurm: True
+snakefile: "/cluster/home/t128737uhn/snakemake_pipelines/RNAseq/workflow/Snakefile"
+restart-times: 3
+keep-going: True
+rerun-incomplete: True
+printshellcmds: True
+scheduler: "greedy"
+cluster: "sbatch -t {cluster.time} --mem {cluster.memory} -p {cluster.partition} -J {cluster.job-name} -N {cluster.nodes} -c {cluster.ntasks-per-node} -D {cluster.chdir} -o {cluster.output} -e {cluster.error}"
+
