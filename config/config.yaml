@@ -1,0 +1,14 @@
+#samples: ['PSTAR_5090_01_LB01-01_20240710', 'PSTAR_5240_01_LB01-01_20240710']
+samples: ['PSTAR_5496_01_LB01-01_20240813', 'PSTAR_05035_01_LB01-01_20240820','PSTAR_5090_01_LB01-01_20240710', 'PSTAR_5240_01_LB01-01_20240710']
+
+path:
+  datadir: "/cluster/projects/lokgroup/Shuye/gene_signature/reads/concatenated"
+  resultdir: "/cluster/projects/lokgroup/Shuye/gene_signature/result"
+  genome_fasta: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/GRCh38.primary_assembly.genome.fa"
+  genome_gtf: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/gencode.v45.primary_assembly.basic.annotation.gtf"
+  indexdir: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/star_index"
+
+params:
+  readlength: 151 # for rMATS
+
+ref_group: ["_5090_", "_5240_"]
