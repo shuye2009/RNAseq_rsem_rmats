@@ -24,11 +24,12 @@ rule multiqc:
         fastqc_pretrim = expand(rules.fastqc_pretrim.output,sample=SAMPLES,read=['R1','R2']),
         fastqc_posttrim = expand(rules.fastqc_posttrim.output.html,sample=SAMPLES,read=['R1','R2']),
         picard = expand(rules.picard.output.pdf,sample=SAMPLES),
-        kallisto = expand(rules.kallisto_quant.output,sample=SAMPLES)
+        kallisto = expand(rules.kallisto_quant.output,sample=SAMPLES),
+        rsem = expand(rules.rsem_count.output,sample=SAMPLES)
     output:
         html = resultdir+"/multiqc/multiqc_report.html"
     params:
-        scan_dir = f"{resultdir}/fastqc/pretrim {resultdir}/fastqc/posttrim {resultdir}/STAR/*/*Log.final.out {resultdir}/logs/kallisto {resultdir}/picard {resultdir}/logs/trimmomatic",
+        scan_dir = f"{resultdir}/fastqc/pretrim {resultdir}/fastqc/posttrim {resultdir}/STAR/*/*Log.final.out {resultdir}/logs/kallisto {resultdir}/logs/RSEM {resultdir}/picard {resultdir}/logs/trimmomatic",
         outdir = directory(resultdir+"/multiqc")
     log:
         resultdir+"/logs/multiqc.log"

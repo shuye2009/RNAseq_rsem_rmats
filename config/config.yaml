@@ -7,8 +7,11 @@ path:
   genome_fasta: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/GRCh38.primary_assembly.genome.fa"
   genome_gtf: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/gencode.v45.primary_assembly.basic.annotation.gtf"
   indexdir: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/star_index"
+  rsemdir: "/cluster/projects/hardinggroup/Shuye/reference_genome/human/GRCh38/rsem_index"
 
 params:
   readlength: 151 # for rMATS
 
 ref_group: ["_5090_", "_5240_"]
+
+stranded: "none"

@@ -1,5 +1,6 @@
 # https://bioconductor.org/packages/3.7/bioc/vignettes/tximport/inst/doc/tximport.html#use-with-downstream-bioconductor-dge-packages
 ### Script written by Danny Bergeron
+### Modified by Shuye Pu, used only when the number of samples in each condition is less than 2, thus deseq2 cannot be called
 
 #############################################################
 #----------------- Loading the librairies -------------------

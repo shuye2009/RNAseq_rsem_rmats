@@ -9,12 +9,13 @@ library(tximport)
 library(DESeq2)
 
 # Variables coming from the snakemake
-kallisto_dir <- snakemake@params[["kallisto_dir"]]
+data_dir <- snakemake@params[["data_dir"]]
 output_dir <- snakemake@params[["out_dir"]]
 design_file <- snakemake@input[["samples"]]
 comparison_file <- snakemake@input[["comparisons"]]
 transcript_gene_file <- snakemake@input[["gene_id"]]
 gene_file <- snakemake@input[["gene_name"]]
+data_type <- snakemake@params[["data_type"]]
 
 # create the directory that will contain the results
 dir.create(output_dir, showWarnings=FALSE)
@@ -44,17 +45,22 @@ id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 
 
 # Get the h5 files for all conditions
-files <- file.path(kallisto_dir, samples, "abundance.h5")
+if(data_type == "kalliston"){
+    files <- file.path(data_dir, samples, "abundance.h5")
+}else if(data_type == "rsem"){
+    files <- file.path(data_dir, samples, paste0(samples,".isoforms.results"))
+}
+
 names(files) <- samples
-txi.kallisto <- tximport(files, type="kallisto", tx2gene=tx2gene) # for gene differential analysis
+txi.data <- tximport(files, type=data_type, tx2gene=tx2gene) # for gene differential analysis
 
 # Output gene level abundance
-gene_abundance <- txi.kallisto$abundance
+gene_abundance <- txi.data$abundance
 gene_id <- data.frame(GENEID = row.names(gene_abundance))
 gene_name <- merge(id2name, gene_id)
 gene_abundance <- cbind(gene_name, gene_abundance)
-write_tsv(gene_abundance, file.path(output_dir, "gene_level_abundance.tsv"))
-# txi.kallisto <- tximport(files, type="kallisto", txOut=TRUE) # for transcript differential analysis
+write_tsv(gene_abundance, file.path(output_dir, paste0(data_type, "_gene_level_abundance.tsv")))
+# txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
 
 
 #############################################################
@@ -62,7 +68,7 @@ write_tsv(gene_abundance, file.path(output_dir, "gene_level_abundance.tsv"))
 #############################################################
 # Create the DESeq2 object with all the conditions
 dds <- DESeqDataSetFromTximport(
-    txi.kallisto,
+    txi.data,
     sampleTable,
     ~condition
 )

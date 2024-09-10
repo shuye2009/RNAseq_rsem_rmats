@@ -22,7 +22,7 @@ rule gene_abundance:
     script:
         "../scripts/gene_level_abundance.R"
 
-rule deseq2:
+rule deseq2_kallisto:
     input:
         quant = expand(rules.kallisto_quant.output, sample=SAMPLES),
         samples = "config/design.tsv",
@@ -30,10 +30,11 @@ rule deseq2:
         gene_id = rules.tx2gene.output.tsv,
         gene_name = rules.tx2gene.output.gene_tsv
     output:
-        out_files = resultdir+"/deseq2/{comp}.csv"
+        out_files = resultdir+"/deseq2/{comp}_kallisto.csv"
     params:
         kallisto_dir = resultdir+"/kallisto",
-        out_dir = resultdir+"/deseq2"
+        out_dir = resultdir+"/deseq2",
+        data_type = "kallisto"
     message:
         "Perform differential expression analysis for {wildcards.comp}."
     conda:
@@ -42,17 +43,61 @@ rule deseq2:
         mem_mb = 8000,
         runtime = 60
     script:
-        "../scripts/DESeq2_kallisto_tximport.R"
+        "../scripts/DESeq2_tximport.R"
 
-
-rule volcano_plot:
+rule deseq2_rsem:
     input:
-        DE_output = rules.deseq2.output.out_files,
+        quant = expand(rules.rsem_count.output, sample=SAMPLES),
+        samples = "config/design.tsv",
+        comparisons = "config/comparisons.tsv",
+        gene_id = rules.tx2gene.output.tsv,
+        gene_name = rules.tx2gene.output.gene_tsv
+    output:
+        out_files = resultdir+"/deseq2/{comp}_rsem.csv"
+    params:
+        data_dir = resultdir+"/RSEM",
+        out_dir = resultdir+"/deseq2",
+        data_type = "rsem"
+    message:
+        "Perform differential expression analysis for {wildcards.comp} using RSEM quantification."
+    conda:
+        "deseq2-1.42.0"
+    resources:
+        mem_mb = 8000,
+        runtime = 60
+    script:
+        "../scripts/DESeq2_tximport.R"
+
+
+rule volcano_plot_kallisto:
+    input:
+        DE_output = rules.deseq2_kallisto.output.out_files,
         filtered_genes = rules.merge_kallisto_quant.output.tpm,
     output:
-        volcano = resultdir+"/deseq2/{comp}.svg",
-        up_genes = resultdir+"/deseq2/{comp}_sig_DE_up.tsv",
-        down_genes = resultdir+"/deseq2/{comp}_sig_DE_down.tsv"
+        volcano = resultdir+"/deseq2/{comp}_kallisto.svg",
+        up_genes = resultdir+"/deseq2/{comp}_kallisto_sig_DE_up.tsv",
+        down_genes = resultdir+"/deseq2/{comp}_kallisto_sig_DE_down.tsv"
+    params:
+        pval_threshold = 0.05,
+        gtf = config["path"]["genome_gtf"]
+    message:
+        "Create a volcano plot using deseq2 output for {wildcards.comp}."
+    conda:
+        "gprofiler-1.0.0"
+    resources:
+        mem_mb = 8000,
+        runtime = 60
+    script:
+        "../scripts/volcano_plot.py"
+
+rule volcano_plot_rsem:
+    input:
+        DE_output = rules.deseq2_rsem.output.out_files,
+        filtered_genes = rules.merge_rsem.output.tpm,
+    output:
+        volcano = resultdir+"/deseq2/{comp}_rsem.svg",
+        up_genes = resultdir+"/deseq2/{comp}_rsem_sig_DE_up.tsv",
+        down_genes = resultdir+"/deseq2/{comp}_rsem_sig_DE_down.tsv"
     params:
         pval_threshold = 0.05,
         gtf = config["path"]["genome_gtf"]

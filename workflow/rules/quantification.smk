@@ -92,14 +92,14 @@ rule tx2gene:
         "../scripts/tx2gene.py"
        
 
-
+## Isoform level merged table
 rule merge_kallisto_quant:
     input:
         quant = expand(rules.kallisto_quant.output, sample=SAMPLES),
         tx2gene = rules.tx2gene.output.tsv,
         gtf = config["path"]["genome_gtf"]
     output:
-        tpm = resultdir+"/kallisto/tpm_{comp}.tsv"
+        tpm = resultdir+"/kallisto/tpm_kallisto.tsv"
     message: 
         "Merge kallisto quantification results into one dataframe for further analysis."
     conda:
