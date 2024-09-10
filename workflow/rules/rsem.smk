@@ -11,7 +11,7 @@ rule rsem_index:
     output:
         rsem = expand(indexdir + "/" + index_prefix + ".{suffix}", suffix = RSEM_SUFFIX)
     params:
-        rsem_prefix = index_prefix
+        rsem_prefix = index_prefix,
         rsem_dir = indexdir
     conda:
         "rsem-1.3.3"
@@ -28,14 +28,15 @@ rule rsem_index:
 
 rule rsem_count:
     input:
-        bam = expand(rules.primary_alignments.output, sample=SAMPLES),
+        index = expand(rules.rsem_index.output.rsem, suffix = RSEM_SUFFIX),
+        bam = rules.star_align.output.txbam,
     output:
         gene = resultdir+"/RSEM/{sample}/{sample}.genes.results",
         isoform = resultdir+"/RSEM/{sample}/{sample}.isoforms.results"
     params:
         stranded = config["stranded"] ,
-        prefixOut = resultdir+"/RSEM/{sample}/{sample}"
-        rsem_idx = indexdir + "/" + index_prefix
+        prefixOut = resultdir+"/RSEM/{sample}/{sample}",
+        rsem_index = indexdir + "/" + index_prefix
     log:
         resultdir+"/logs/RSEM/{sample}_rsem.log"
     message:
@@ -50,6 +51,7 @@ rule rsem_count:
         "rsem-calculate-expression "
         "--no-bam-output "
         "--alignments "
+        "--paired-end "
         "-p {threads} "
         "--strandedness {params.stranded} "
         "{input.bam} {params.rsem_index} {params.prefixOut}"

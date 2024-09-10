@@ -1,19 +1,42 @@
 ### Adapted from Danny Bergeron's code
 resultdir = config['path']['resultdir']
 
-rule gene_abundance:
+rule gene_abundance_kallisto:
     input:
-        quant = expand(rules.kallisto_quant.output, sample=SAMPLES),
+        quant = expand(rules.kallisto_quant.output.h5, sample=SAMPLES),
         samples = "config/design.tsv",
         gene_id = rules.tx2gene.output.tsv,
         gene_name = rules.tx2gene.output.gene_tsv
     output:
-        out_file = resultdir+"/deseq2/gene_level_abundance.tsv"
+        out_file = resultdir+"/deseq2/kallisto_gene_level_abundance.tsv"
     params:
         kallisto_dir = resultdir+"/kallisto",
-        out_dir = resultdir+"/deseq2"
+        out_dir = resultdir+"/deseq2",
+        data_type = "kallisto"
     message:
-        "Perform gene level abundance calculation."
+        "Perform gene level abundance calculation for kallisto."
+    conda:
+        "deseq2-1.42.0"
+    resources:
+        mem_mb = 8000,
+        runtime = 60
+    script:
+        "../scripts/gene_level_abundance.R"
+
+rule gene_abundance_rsem:
+    input:
+        quant = expand(rules.rsem_count.output.gene, sample=SAMPLES),
+        samples = "config/design.tsv",
+        gene_id = rules.tx2gene.output.tsv,
+        gene_name = rules.tx2gene.output.gene_tsv
+    output:
+        out_file = resultdir+"/deseq2/rsem_gene_level_abundance.tsv"
+    params:
+        data_dir = resultdir+"/RSEM",
+        out_dir = resultdir+"/deseq2",
+        data_type = "rsem"
+    message:
+        "Perform gene level abundance calculation for RSEM."
     conda:
         "deseq2-1.42.0"
     resources:
@@ -24,13 +47,13 @@ rule gene_abundance:
 
 rule deseq2_kallisto:
     input:
-        quant = expand(rules.kallisto_quant.output, sample=SAMPLES),
+        quant = expand(rules.kallisto_quant.output.tsv, sample=SAMPLES),
         samples = "config/design.tsv",
         comparisons = "config/comparisons.tsv",
         gene_id = rules.tx2gene.output.tsv,
         gene_name = rules.tx2gene.output.gene_tsv
     output:
-        out_files = resultdir+"/deseq2/{comp}_kallisto.csv"
+        out_files = resultdir+"/deseq2/{comp}_kallisto.csv",
     params:
         kallisto_dir = resultdir+"/kallisto",
         out_dir = resultdir+"/deseq2",
@@ -47,13 +70,13 @@ rule deseq2_kallisto:
 
 rule deseq2_rsem:
     input:
-        quant = expand(rules.rsem_count.output, sample=SAMPLES),
+        quant = expand(rules.rsem_count.output.isoform, sample=SAMPLES),
         samples = "config/design.tsv",
         comparisons = "config/comparisons.tsv",
         gene_id = rules.tx2gene.output.tsv,
         gene_name = rules.tx2gene.output.gene_tsv
     output:
-        out_files = resultdir+"/deseq2/{comp}_rsem.csv"
+        out_files = resultdir+"/deseq2/{comp}_rsem.csv",
     params:
         data_dir = resultdir+"/RSEM",
         out_dir = resultdir+"/deseq2",
@@ -76,7 +99,8 @@ rule volcano_plot_kallisto:
     output:
         volcano = resultdir+"/deseq2/{comp}_kallisto.svg",
         up_genes = resultdir+"/deseq2/{comp}_kallisto_sig_DE_up.tsv",
-        down_genes = resultdir+"/deseq2/{comp}_kallisto_sig_DE_down.tsv"
+        down_genes = resultdir+"/deseq2/{comp}_kallisto_sig_DE_down.tsv",
+        all_genes = resultdir+"/deseq2/{comp}_kallisto_DE.tsv"
     params:
         pval_threshold = 0.05,
         gtf = config["path"]["genome_gtf"]
@@ -97,7 +121,8 @@ rule volcano_plot_rsem:
     output:
         volcano = resultdir+"/deseq2/{comp}_rsem.svg",
         up_genes = resultdir+"/deseq2/{comp}_rsem_sig_DE_up.tsv",
-        down_genes = resultdir+"/deseq2/{comp}_rsem_sig_DE_down.tsv"
+        down_genes = resultdir+"/deseq2/{comp}_rsem_sig_DE_down.tsv",
+        all_genes = resultdir+"/deseq2/{comp}_rsem_DE.tsv"
     params:
         pval_threshold = 0.05,
         gtf = config["path"]["genome_gtf"]
@@ -114,7 +139,7 @@ rule volcano_plot_rsem:
 
 rule GO_upregulated_genes:
     input:
-        genes = rules.volcano_plot.output.up_genes
+        genes = rules.volcano_plot_rsem.output.up_genes
     output:
         bar_chart = resultdir+"/GO/GO_{comp}_up.svg"
     message:
@@ -130,7 +155,7 @@ rule GO_upregulated_genes:
 
 rule GO_downregulated_genes:
     input:
-        genes = rules.volcano_plot.output.down_genes
+        genes = rules.volcano_plot_rsem.output.down_genes
     output:
         bar_chart = resultdir+"/GO/GO_{comp}_down.svg"
     message:

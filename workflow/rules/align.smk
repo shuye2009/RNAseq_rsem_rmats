@@ -39,7 +39,8 @@ rule star_align:
         fq2 = rules.trimmomatic.output.r2,
         chrNameLength = rules.star_index.output
     output:
-        bam = resultdir+"/STAR/{sample}/{sample}_Aligned.sortedByCoord.out.bam"
+        bam = resultdir+"/STAR/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
+        txbam = resultdir+"/STAR/{sample}/{sample}_Aligned.toTranscriptome.out.bam"
     log:
         resultdir+"/logs/STAR/{sample}_align.log"
     params:
@@ -60,6 +61,7 @@ rule star_align:
         "--genomeDir {params.idx} "
         "--readFilesIn {input.fq1} {input.fq2} "
         "--runThreadN {threads} "
+        "--quantMode TranscriptomeSAM "
         "--readFilesCommand zcat --outReadsUnmapped Fastx "
         "--outFilterType BySJout --outStd Log --outSAMunmapped Within "
         "--outSAMtype BAM SortedByCoordinate "

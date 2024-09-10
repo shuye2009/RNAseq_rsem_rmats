@@ -56,11 +56,27 @@ df.loc[(df['padj'] < pval_threshold) & (df['log2FoldChange'] < -1),
 df['sig.'] = df['sig.'].replace('nan','n.s.')
 df['sig.'] = df['sig.'].fillna('n.s.')
 
+# Add gene name
+
+id_name = df_gtf[['gene_id','gene_name']].to_pandas().drop_duplicates(ignore_index=True)
+
+df.set_index('gene', inplace=True)
+index = df.index.tolist()
+names =[]
+
+for i in range(len(index)):
+    id = index[i]
+    name = id_name[id_name['gene_id']==id].iloc[0]['gene_name']
+    names.append(name)
+
+df['gene_name'] = names
+
 # Extract genes that are significant
 outfile_up = snakemake.output.up_genes
 outfile_down = snakemake.output.down_genes
+outfile_all = snakemake.output.all_genes
 df_genes = df[~df['sig.'].str.contains('n.s.')]
-df_genes = df_genes[['gene','log2FoldChange','padj']]
+df_genes = df_genes[['gene_name','log2FoldChange','padj']]
 
 up = df_genes[(df_genes['log2FoldChange'] > 1) & (df_genes['padj'] < pval_threshold)]
 print("Total # of significant upregulated protein-coding genes")
@@ -72,6 +88,7 @@ print("Total # of significant downregulated protein-coding genes")
 print(len(down))
 up.to_csv(outfile_up, sep='\t', index=False)
 down.to_csv(outfile_down, sep='\t', index=False)
+df_genes.to_csv(outfile_all, sep='\t', index=False)
 
 # Create volcano function
 def volcano(df, x_col, y_col, hue_col, xlabel, ylabel, title, color_dict, path,

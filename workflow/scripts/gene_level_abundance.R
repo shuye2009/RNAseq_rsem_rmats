@@ -1,6 +1,5 @@
 # https://bioconductor.org/packages/3.7/bioc/vignettes/tximport/inst/doc/tximport.html#use-with-downstream-bioconductor-dge-packages
 ### Script written by Danny Bergeron
-### Modified by Shuye Pu, used only when the number of samples in each condition is less than 2, thus deseq2 cannot be called
 
 #############################################################
 #----------------- Loading the librairies -------------------
@@ -10,12 +9,14 @@ library(tximport)
 library(DESeq2)
 
 # Variables coming from the snakemake
-kallisto_dir <- snakemake@params[["kallisto_dir"]]
+data_dir <- snakemake@params[["data_dir"]]
 output_dir <- snakemake@params[["out_dir"]]
 design_file <- snakemake@input[["samples"]]
 transcript_gene_file <- snakemake@input[["gene_id"]]
+files <- snakemake@input[["quant"]]
 gene_file <- snakemake@input[["gene_name"]]
-out_file <- snakemake@output[["out_file"]]
+data_type <- snakemake@params[["data_type"]]
+
 # create the directory that will contain the results
 dir.create(output_dir, showWarnings=FALSE)
 
@@ -29,6 +30,7 @@ sampleTable <- read.table(
 )
 conditions <- unique(sampleTable$condition)
 samples <- rownames(sampleTable)
+sampleTable$condition <- factor(sampleTable$condition, levels=conditions)
 
 # Read the transcript-gene matrix
 tx2gene <- read_tsv(transcript_gene_file, col_names=c('TXNAME', 'GENEID'))
@@ -36,14 +38,21 @@ tx2gene <- read_tsv(transcript_gene_file, col_names=c('TXNAME', 'GENEID'))
 # Read the gene id-name matrix
 id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 
+
 # Get the h5 files for all conditions
-files <- file.path(kallisto_dir, samples, "abundance.h5")
+#if(data_type == "kalliston"){
+#    files <- file.path(data_dir, samples, "abundance.h5")
+#}else if(data_type == "rsem"){
+#    files <- file.path(data_dir, samples, paste0(samples,".isoforms.results"))
+#}
+
 names(files) <- samples
-txi.kallisto <- tximport(files, type="kallisto", tx2gene=tx2gene) # for gene differential analysis
+txi.data <- tximport(files, type=data_type, tx2gene=tx2gene) # for gene differential analysis
 
 # Output gene level abundance
-gene_abundance <- txi.kallisto$abundance
+gene_abundance <- txi.data$abundance
 gene_id <- data.frame(GENEID = row.names(gene_abundance))
 gene_name <- merge(id2name, gene_id)
 gene_abundance <- cbind(gene_name, gene_abundance)
-write_tsv(gene_abundance, out_file)
+write_tsv(gene_abundance, file.path(output_dir, paste0(data_type, "_gene_level_abundance.tsv")))
+# txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis

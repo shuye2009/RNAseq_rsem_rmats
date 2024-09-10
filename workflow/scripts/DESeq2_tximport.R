@@ -15,6 +15,7 @@ design_file <- snakemake@input[["samples"]]
 comparison_file <- snakemake@input[["comparisons"]]
 transcript_gene_file <- snakemake@input[["gene_id"]]
 gene_file <- snakemake@input[["gene_name"]]
+files <- snakemake@input[["quant"]]
 data_type <- snakemake@params[["data_type"]]
 
 # create the directory that will contain the results
@@ -45,21 +46,14 @@ id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 
 
 # Get the h5 files for all conditions
-if(data_type == "kalliston"){
-    files <- file.path(data_dir, samples, "abundance.h5")
-}else if(data_type == "rsem"){
-    files <- file.path(data_dir, samples, paste0(samples,".isoforms.results"))
-}
+#if(data_type == "kalliston"){
+#    files <- file.path(data_dir, samples, "abundance.h5")
+#}else if(data_type == "rsem"){
+#    files <- file.path(data_dir, samples, paste0(samples,".isoforms.results"))
+#}
 
 names(files) <- samples
 txi.data <- tximport(files, type=data_type, tx2gene=tx2gene) # for gene differential analysis
-
-# Output gene level abundance
-gene_abundance <- txi.data$abundance
-gene_id <- data.frame(GENEID = row.names(gene_abundance))
-gene_name <- merge(id2name, gene_id)
-gene_abundance <- cbind(gene_name, gene_abundance)
-write_tsv(gene_abundance, file.path(output_dir, paste0(data_type, "_gene_level_abundance.tsv")))
 # txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
 
 

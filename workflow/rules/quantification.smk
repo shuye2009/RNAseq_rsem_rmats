@@ -49,7 +49,8 @@ rule kallisto_quant:
         fq1 = rules.trimmomatic.output.r1,
         fq2 = rules.trimmomatic.output.r2
     output:
-        resultdir+"/kallisto/{sample}/abundance.tsv"
+        tsv = resultdir+"/kallisto/{sample}/abundance.tsv",
+        h5 = resultdir+"/kallisto/{sample}/abundance.h5"
     params:
         bootstrap = "50",
         outdir = resultdir+"/kallisto/{sample}"
@@ -95,7 +96,7 @@ rule tx2gene:
 ## Isoform level merged table
 rule merge_kallisto_quant:
     input:
-        quant = expand(rules.kallisto_quant.output, sample=SAMPLES),
+        quant = expand(rules.kallisto_quant.output.tsv, sample=SAMPLES),
         tx2gene = rules.tx2gene.output.tsv,
         gtf = config["path"]["genome_gtf"]
     output:
