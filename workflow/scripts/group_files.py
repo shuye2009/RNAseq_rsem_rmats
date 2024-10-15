@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 def make_files(files, out1, out2):  

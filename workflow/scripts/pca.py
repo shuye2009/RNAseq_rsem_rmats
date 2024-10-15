@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 ### Adapted from Étienne Fafard-Couture's PCA script
 
