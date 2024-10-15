@@ -1,5 +1,10 @@
 #samples: ['PSTAR_5090_01_LB01-01_20240710', 'PSTAR_5240_01_LB01-01_20240710']
-samples: ['PSTAR_5496_01_LB01-01_20240813', 'PSTAR_05035_01_LB01-01_20240820','PSTAR_5090_01_LB01-01_20240710', 'PSTAR_5240_01_LB01-01_20240710']
+samples: ['PSTAR_5496_01_LB01-01_20240813', 
+  'PSTAR_05035_01_LB01-01_20240820',
+  'PSTAR_5090_01_LB01-01_20240710', 
+  'PSTAR_5240_01_LB01-01_20240710', 
+  'PSTAR_0018_01_LB01-01_20240911', 
+  'PSTAR_5478_01_LB01-01_20240911']
 
 path:
   datadir: "/cluster/projects/lokgroup/Shuye/gene_signature/reads/concatenated"
@@ -12,6 +17,6 @@ path:
 params:
   readlength: 151 # for rMATS
 
-ref_group: ["_5090_", "_5240_"]
+ref_group: ["_5090_", "_5240_", "_5478_"]
 
 stranded: "none"

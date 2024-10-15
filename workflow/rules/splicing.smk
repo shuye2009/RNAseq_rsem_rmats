@@ -3,7 +3,7 @@ resultdir = config['path']['resultdir']
 
 rule make_files:
     input:
-        files = expand(rules.star_align.output, sample=SAMPLES)
+        files = expand(rules.star_align.output.bam, sample=SAMPLES)
     output:
         b1 = "config/rmats_b1.txt",
         b2 = "config/rmats_b2.txt"

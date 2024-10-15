@@ -85,7 +85,7 @@ for (row in 1:nrow(comparisons)) {
 
     condition1 <- comparisons[row, "cdn1"]
     condition2  <- comparisons[row, "cdn2"]
-    exp <- sprintf("%s-%s", condition1, condition2)
+    exp <- sprintf("%s-%s_%s", condition1, condition2, data_type)
 
     res <- results(
         dds,
