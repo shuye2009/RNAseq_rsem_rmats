@@ -59,7 +59,9 @@ rule rsem_count:
     
 rule merge_rsem:
     input:
-        quant = expand(rules.rsem_count.output.isoform, sample=SAMPLES)
+        quant = expand(rules.rsem_count.output.isoform, sample=SAMPLES),
+        tx2gene = rules.tx2gene.output.tsv,
+        gtf = config["path"]["genome_gtf"]
     output:
         tpm = resultdir+"/RSEM/rsem_isoform_tpm.tsv"
     message: 

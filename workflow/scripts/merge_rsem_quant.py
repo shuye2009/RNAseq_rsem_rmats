@@ -4,6 +4,8 @@ import pandas as pd
 from gtfparse import read_gtf
 import os
 
+tx2gene = snakemake.input.tx2gene
+gtf = snakemake.input.gtf
 outfile = snakemake.output.tpm
 
 final_df = pd.DataFrame()
@@ -12,7 +14,7 @@ sample_list = []
 
 for q in snakemake.input.quant:
 
-    data = pd.read_csv(q, sep='\t', usecols=['transcript_id', 'gene_id', 'TPM'])
+    data = pd.read_csv(q, sep='\t', usecols=['transcript_id', 'TPM'])
 
     # get sample name
     sample = os.path.basename(os.path.dirname(q))
@@ -29,6 +31,13 @@ for q in snakemake.input.quant:
     
     sample_list += [sample]
     cycle+=1
+
+# transcript ID --> gene ID
+ids = pd.read_csv(tx2gene, sep='\t', names=['transcript','gene'])
+ids.set_index('transcript', inplace=True, drop=False)
+
+final_df = pd.merge(final_df, ids, left_index=True, right_index=True)
+final_df.set_index('gene', inplace=True)
 
 # Add gene name
 df_gtf = read_gtf(gtf)

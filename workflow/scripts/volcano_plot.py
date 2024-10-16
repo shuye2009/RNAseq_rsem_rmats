@@ -58,7 +58,7 @@ df['sig.'] = df['sig.'].fillna('n.s.')
 
 # Add gene name
 
-id_name = df_gtf[['gene_id','gene_name']].to_pandas().drop_duplicates(ignore_index=True)
+id_name = df_gtf[['gene_id','gene_name']].drop_duplicates(ignore_index=True) # removed .to_pandas()q
 
 df.set_index('gene', inplace=True)
 index = df.index.tolist()
