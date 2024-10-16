@@ -41,6 +41,8 @@ rule multiqc:
         mem_mb = 3000,
         runtime = 60
     shell:
-        "multiqc {params.scan_dir} "
-        "--outdir {params.outdir} "
-        "&> {log}"
+        """
+        if [[ -d {params.outdir}/multiqc_data ]]; then rm -r {params.outdir}/multiqc_data; fi
+        multiqc {params.scan_dir} --outdir {params.outdir} &> {log}
+        
+        """
