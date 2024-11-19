@@ -4,7 +4,7 @@
         "account" : "hakemgroup",
         "partition" : "all",
         "job-name": "smk_{rule}_{wildcards}",
-        "time" : "3:00:00", # time limit for each job
+        "time" : "5:00:00", # time limit for each job
         "nodes" : 1,
         "memory" : "20G",
         "ntasks-per-node" : 1, # Request n cores be allocated per node.
@@ -29,6 +29,14 @@
         "ntasks-per-node" : 10, # Request n cores be allocated per node.
     },
 
+    "rsem_count" :
+    {
+        "partition" : "himem",
+        "time" : "10:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
     "rmats" :
     {
         "partition" : "veryhimem",
@@ -40,7 +48,7 @@
     "filter_rmats" :
     {
         "partition" : "himem",
-        "time" : "3:00:00", # time limit for each job
+        "time" : "5:00:00", # time limit for each job
         "memory" : "30G",
         "ntasks-per-node" : 10, # Request n cores be allocated per node.
     },
@@ -48,7 +56,7 @@
     "volcano_plot" :
     {
         "partition" : "himem",
-        "time" : "3:00:00", # time limit for each job
+        "time" : "5:00:00", # time limit for each job
         "memory" : "30G",
         "ntasks-per-node" : 10, # Request n cores be allocated per node.
     },

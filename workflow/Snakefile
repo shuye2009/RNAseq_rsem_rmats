@@ -13,7 +13,7 @@ configfile: "config/config.yaml"
 ## Samples Information
 #############################
 
-SAMPLES = config["samples"]
+#SAMPLES = config["samples"]
 
 resultdir = config['path']['resultdir']
 
@@ -22,6 +22,7 @@ comparisons = ["%s-%s" % (cdn1,cdn2) for [cdn1, cdn2] in df.values.tolist()]
 
 df_cond = pd.read_csv('config/design.tsv', sep=r'\s+', usecols=['sample','condition'])
 conditions = df_cond['condition'].unique().tolist()
+SAMPLES = df_cond['sample'].tolist()
 
 #############################
 ## Load rules
@@ -43,7 +44,7 @@ rule all:
     input:
         bedgraphs = expand(resultdir+"/genomecov/{sample}.bedgraph", sample=SAMPLES),
         rMATS = expand(resultdir+"/rmats/{comp}/filtered/SE.tsv", comp=comparisons),
-        pca = expand(resultdir+"/pca/pca_{comp}.svg", comp=comparisons), # pca.py script specific for NC vs KD conditions; Modify as needed,
+        pca = expand(resultdir+"/pca/pca.svg"), # pca.py script specific for NC vs KD conditions; Modify as needed,
         multiqc = resultdir+"/multiqc/multiqc_report.html",
         volcano_plot_kallisto = expand(resultdir+"/deseq2/{comp}_kallisto.svg", comp=comparisons),
         volcano_plot_rsem = expand(resultdir+"/deseq2/{comp}_rsem.svg", comp=comparisons),

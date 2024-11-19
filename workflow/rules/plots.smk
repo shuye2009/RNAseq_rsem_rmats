@@ -2,14 +2,14 @@ resultdir = config['path']['resultdir']
 
 rule pca:
     input:
-        tpm = rules.merge_kallisto_quant.output.tpm
+        tpm = rules.merge_rsem.output.tpm
     output:
-        plot = resultdir+"/pca/pca_{comp}.svg",
-        tsv = resultdir+"/pca/pca_{comp}.tsv"
+        plot = resultdir+"/pca/pca.svg",
+        tsv = resultdir+"/pca/pca.tsv"
     params:
         design = 'config/design.tsv'
     message:
-        "Generate a PCA plot to observe variance between {wildcards.comp} samples."
+        "Generate a PCA plot to observe variance between samples."
     conda:
         "matplotlib-3.8.2"
     resources:

@@ -3,20 +3,22 @@ resultdir = config['path']['resultdir']
 
 rule make_files:
     input:
-        files = expand(rules.star_align.output.bam, sample=SAMPLES)
+        files = expand(rules.primary_alignments.output, sample=SAMPLES),
+        design = "config/design.tsv",
+        comparisons = "config/comparisons.tsv",
     output:
-        b1 = "config/rmats_b1.txt",
-        b2 = "config/rmats_b2.txt"
-    params:
-        ref = config["ref_group"]
+        b1 = "config/{comp}/rmats_b1.txt",
+        b2 = "config/{comp}/rmats_b2.txt"
+    message:
+        "Create b1 b2 files for {wildcards.comp}."
     script:
         "../scripts/group_files.py"
 
 rule rmats:
     input:
         bam = expand(rules.primary_alignments.output, sample=SAMPLES),
-        group1 = rules.make_files.output.b1,
-        group2 = rules.make_files.output.b2,
+        group1 = "config/{comp}/rmats_b1.txt",
+        group2 = "config/{comp}/rmats_b2.txt",
         gtf = config["path"]["genome_gtf"]
     output:
         outdir = directory(resultdir+"/rmats/{comp}/raw"),
@@ -43,7 +45,7 @@ rule rmats:
 rule filter_rmats:
     input:
         summary = rules.rmats.output.summary,
-        tpm = rules.merge_kallisto_quant.output.tpm
+        tpm = rules.merge_rsem.output.tpm
     output:
         result = resultdir+"/rmats/{comp}/filtered/SE.tsv"
     params:
