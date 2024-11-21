@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import re
 
-df = pd.read_csv(snakemake.input.tpm, sep='\t', index_col='gene')
+df = pd.read_csv(snakemake.input.tpm, sep=r'\t', index_col='gene')
 df = df.drop(columns=['transcript', 'gene_name'])
 df = df.T
 
@@ -34,7 +34,7 @@ def legend_text(tuples):
     return labels
 
 # Add condition and sample information to the PCA dataframe
-design = pd.read_csv(snakemake.params.design, sep='\s+')
+design = pd.read_csv(snakemake.params.design, sep=r'\s+')
 tup = design[['condition','sample']].apply(tuple, axis=1)
 principal_df['label'] = legend_text(tup)
 
@@ -46,7 +46,7 @@ def color_palette(labels):
     #mcolors.TABLEAU_COLORS
 
     categories = list(set(labels)) # unique conditions
-    colors = mcolors.TABLEAU_COLORS[1:len(categories)].keys() # MAX 10 colors
+    colors = list(mcolors.TABLEAU_COLORS.keys()) # MAX 10 colors
     # dictionary = dict(zip(categories, colors))
 
     for l in labels:

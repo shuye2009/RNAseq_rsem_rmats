@@ -1,17 +1,19 @@
 #!/usr/bin/env python
+import pandas as pd
 
-def make_files(files, design, comparisons):
-    df = pd.read_csv(comparisons, sep=r'\s+')
+def make_files(files, design, comps):
+    df = pd.read_csv(comps, sep=r'\s+')
     df_cond = pd.read_csv(design, sep=r'\s+', usecols=['sample','condition'])
 
     for [cdn1, cdn2] in df.values.tolist():
         comparison = "%s-%s" % (cdn1,cdn2)
-        out2 = "config/" + comparison + "/rmats_bt2.txt"
-        out1 = "config/" + comparison + "/rmats_bt1.txt"
-        wtstrings = df_cond['sample'][df['condition'] == cdn1].values.tolist()
-        kostrings = df_cond['sample'][df['condition'] == cdn2].values.tolist()
+        out1 = "config/" + comparison + "/rmats_b1.txt" 
+        out2 = "config/" + comparison + "/rmats_b2.txt" 
+
+        wtstrings = df_cond['sample'][df_cond['condition'] == cdn1].values.tolist()
+        kostrings = df_cond['sample'][df_cond['condition'] == cdn2].values.tolist()
         dictionary = {"ko": [], "wt": []} 
-     
+        
         for file in files:
             for substring in wtstrings:
                 if substring in file:  
@@ -30,5 +32,5 @@ def make_files(files, design, comparisons):
     
     
 
-make_files(snakemake.input.files, snakemake.input.design, snakemake.input.comparisons)
+make_files(snakemake.input.files, snakemake.input.design, snakemake.input.comps)
 #in the rule that executes the script, define the folder with bam files as the input, and final output files as two outputsq

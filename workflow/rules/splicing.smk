@@ -5,12 +5,12 @@ rule make_files:
     input:
         files = expand(rules.primary_alignments.output, sample=SAMPLES),
         design = "config/design.tsv",
-        comparisons = "config/comparisons.tsv",
+        comps = "config/comparisons.tsv"
     output:
-        b1 = "config/{comp}/rmats_b1.txt",
-        b2 = "config/{comp}/rmats_b2.txt"
+        b1 = expand("config/{comp}/rmats_b1.txt", comp=comparisons),
+        b2 = expand("config/{comp}/rmats_b2.txt", comp=comparisons)
     message:
-        "Create b1 b2 files for {wildcards.comp}."
+        "Create b1 b2 files for rmats."
     script:
         "../scripts/group_files.py"
 

@@ -31,9 +31,9 @@
 
     "rsem_count" :
     {
-        "partition" : "himem",
+        "partition" : "all",
         "time" : "10:00:00", # time limit for each job
-        "memory" : "30G",
+        "memory" : "20G",
         "ntasks-per-node" : 10, # Request n cores be allocated per node.
     },
 
