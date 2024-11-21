@@ -5,9 +5,13 @@ rule pca:
         tpm = rules.merge_rsem.output.tpm
     output:
         plot = resultdir+"/pca/pca.svg",
-        tsv = resultdir+"/pca/pca.tsv"
+        tsv = resultdir+"/pca/pca.tsv",
+        plot_individual = expand(resultdir+"/pca/pca_{comp}.svg", comp=comparisons),
+        tsv_individual = expand(resultdir+"/pca/pca_{comp}.tsv", comp=comparisons)
     params:
-        design = 'config/design.tsv'
+        design = 'config/design.tsv',
+        comparisons = 'config/comparisons.tsv',
+        dir = resultdir + "/pca/"
     message:
         "Generate a PCA plot to observe variance between samples."
     conda:

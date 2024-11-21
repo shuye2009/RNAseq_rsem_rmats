@@ -34,9 +34,12 @@ def legend_text(tuples):
     return labels
 
 # Add condition and sample information to the PCA dataframe
-design = pd.read_csv(snakemake.params.design, sep=r'\s+')
+design = pd.read_csv(snakemake.params.design, sep=r'\s+', index_col='sample')
+design = design.reindex(principal_df['sample']) # make sure the order of sample is the same
+design['sample'] = design.index
 tup = design[['condition','sample']].apply(tuple, axis=1)
-principal_df['label'] = legend_text(tup)
+#principal_df['label'] = legend_text(tup)
+principal_df['label'] = design['condition']
 
 var1, var2 = round(pca.explained_variance_ratio_[0], 4) * 100, round(pca.explained_variance_ratio_[1], 4) * 100
 
@@ -60,12 +63,13 @@ def pca_plot(df, x_col, y_col, hue_col, xlabel, ylabel, title, path, **kwargs):
     
     # Creates a PCA (scatter) plot (using a x, y and hue column).
     
-    plt.figure(figsize=(5.5,4))
+    plt.figure(figsize=(10,8))
     plt.rcParams['svg.fonttype'] = 'none'
     plt.rcParams["legend.loc"] = 'upper right'
 
     plt.suptitle(title, fontsize=16)
-    sns.scatterplot(data=df, x=x_col, y=y_col, hue=hue_col, palette=color_palette(df[hue_col]), edgecolor='face',
+    # palette=color_palette(df[hue_col])
+    sns.scatterplot(data=df, x=x_col, y=y_col, hue=hue_col, palette="deep", edgecolor='face',
                     alpha=0.7, s=50, **kwargs)
 
     plt.xticks(fontsize=14)
@@ -76,8 +80,23 @@ def pca_plot(df, x_col, y_col, hue_col, xlabel, ylabel, title, path, **kwargs):
 
     plt.savefig(path, bbox_inches='tight', dpi=600)
 
-# Create PCA scatter plot
+# Create PCA scatter plot for all samples
 pca_plot(principal_df, 'PC1', 'PC2', 'label', f'PC1 ({var1:.2f}%)', f'PC2 ({var2:.2f}%)',
         'PCA plot based on scaled TPM', snakemake.output.plot)
 
 principal_df.to_csv(snakemake.output.tsv, sep='\t', index=False)
+
+# Create PCA scatter plot for samples in individual comparisons
+comps = pd.read_csv(snakemake.params.comparisons, sep=r'\s+')
+
+for [cdn1, cdn2] in comps.values.tolist():
+        comparison = "%s-%s" % (cdn1,cdn2)
+
+        cnd_samples = design['sample'][design['condition'].isin(cdn1 + cdn2)].values.tolist()
+        
+        principal_subdf = principal_df[principal_df["sample"].isin(cnd_samples)]
+
+        pca_plot(principal_subdf, 'PC1', 'PC2', 'label', f'PC1 ({var1:.2f}%)', f'PC2 ({var2:.2f}%)',
+        'PCA plot based on scaled TPM', snakemake.params.dir + "pca_" + comparison + ".svg")
+
+        principal_subdf.to_csv(snakemake.params.dir + "pca_" + comparison + ".tsv", sep='\t', index=False)
