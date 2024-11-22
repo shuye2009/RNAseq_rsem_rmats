@@ -11,6 +11,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import re
 
+#df = pd.read_csv( "/cluster/projects/lokgroup/Shuye/rnasplicing/results/RSEM/rsem_isoform_tpm.tsv", sep=r'\t', index_col='gene')
 df = pd.read_csv(snakemake.input.tpm, sep=r'\t', index_col='gene')
 df = df.drop(columns=['transcript', 'gene_name'])
 df = df.T
@@ -34,12 +35,14 @@ def legend_text(tuples):
     return labels
 
 # Add condition and sample information to the PCA dataframe
+
+# design = pd.read_csv("~/snakemake_pipelines/RNAseq_rsem_rmats/config/design.tsv", sep=r'\s+', index_col='sample')
 design = pd.read_csv(snakemake.params.design, sep=r'\s+', index_col='sample')
 design = design.reindex(principal_df['sample']) # make sure the order of sample is the same
 design['sample'] = design.index
-tup = design[['condition','sample']].apply(tuple, axis=1)
+#tup = design[['condition','sample']].apply(tuple, axis=1)
 #principal_df['label'] = legend_text(tup)
-principal_df['label'] = design['condition']
+principal_df['label'] = list(design['condition'])
 
 var1, var2 = round(pca.explained_variance_ratio_[0], 4) * 100, round(pca.explained_variance_ratio_[1], 4) * 100
 
@@ -65,7 +68,7 @@ def pca_plot(df, x_col, y_col, hue_col, xlabel, ylabel, title, path, **kwargs):
     
     plt.figure(figsize=(10,8))
     plt.rcParams['svg.fonttype'] = 'none'
-    plt.rcParams["legend.loc"] = 'upper right'
+    plt.rcParams["legend.loc"] = 'best' # 'upper right'
 
     plt.suptitle(title, fontsize=16)
     # palette=color_palette(df[hue_col])
@@ -87,12 +90,13 @@ pca_plot(principal_df, 'PC1', 'PC2', 'label', f'PC1 ({var1:.2f}%)', f'PC2 ({var2
 principal_df.to_csv(snakemake.output.tsv, sep='\t', index=False)
 
 # Create PCA scatter plot for samples in individual comparisons
+#comps = pd.read_csv("~/snakemake_pipelines/RNAseq_rsem_rmats/config/comparisons.tsv", sep=r'\s+')
 comps = pd.read_csv(snakemake.params.comparisons, sep=r'\s+')
 
 for [cdn1, cdn2] in comps.values.tolist():
         comparison = "%s-%s" % (cdn1,cdn2)
 
-        cnd_samples = design['sample'][design['condition'].isin(cdn1 + cdn2)].values.tolist()
+        cnd_samples = design['sample'][design['condition'].isin([cdn1, cdn2])].values.tolist()
         
         principal_subdf = principal_df[principal_df["sample"].isin(cnd_samples)]
 
