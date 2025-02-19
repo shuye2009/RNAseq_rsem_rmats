@@ -8,13 +8,14 @@ rule gene_abundance_kallisto:
         gene_id = rules.tx2gene.output.tsv,
         gene_name = rules.tx2gene.output.gene_tsv
     output:
-        out_file = resultdir+"/deseq2/kallisto_gene_level_abundance.tsv"
+        tpm_file = resultdir+"/deseq2/kallisto_gene_level_abundance.tsv",
+        counts_file = resultdir+"/deseq2/kallisto_gene_level_counts.tsv"
     params:
         kallisto_dir = resultdir+"/kallisto",
         out_dir = resultdir+"/deseq2",
         data_type = "kallisto"
     message:
-        "Perform gene level abundance calculation for kallisto."
+        "Perform gene level abundance and counts calculation for kallisto."
     conda:
         "deseq2-1.42.0"
     resources:
@@ -25,18 +26,19 @@ rule gene_abundance_kallisto:
 
 rule gene_abundance_rsem:
     input:
-        quant = expand(rules.rsem_count.output.gene, sample=SAMPLES),
+        quant = expand(rules.rsem_count.output.isoform, sample=SAMPLES),
         samples = "config/design.tsv",
         gene_id = rules.tx2gene.output.tsv,
         gene_name = rules.tx2gene.output.gene_tsv
     output:
-        out_file = resultdir+"/deseq2/rsem_gene_level_abundance.tsv"
+        tpm_file = resultdir+"/deseq2/rsem_gene_level_abundance.tsv",
+        counts_file = resultdir+"/deseq2/rsem_gene_level_counts.tsv"
     params:
         data_dir = resultdir+"/RSEM",
         out_dir = resultdir+"/deseq2",
         data_type = "rsem"
     message:
-        "Perform gene level abundance calculation for RSEM."
+        "Perform gene level abundance and counts calculation for RSEM."
     conda:
         "deseq2-1.42.0"
     resources:

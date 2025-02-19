@@ -48,6 +48,7 @@ id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 
 names(files) <- samples
 txi.data <- tximport(files, type=data_type, tx2gene=tx2gene) # for gene differential analysis
+# txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
 
 # Output gene level abundance
 gene_abundance <- txi.data$abundance
@@ -55,4 +56,18 @@ gene_id <- data.frame(GENEID = row.names(gene_abundance))
 gene_name <- merge(id2name, gene_id)
 gene_abundance <- cbind(gene_name, gene_abundance)
 write_tsv(gene_abundance, file.path(output_dir, paste0(data_type, "_gene_level_abundance.tsv")))
-# txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
+
+# Output gene level counts
+gene_counts <- txi.data$counts
+gene_id <- data.frame(GENEID = row.names(gene_counts))
+gene_name <- merge(id2name, gene_id)
+gene_counts <- cbind(gene_name, gene_counts)
+write_tsv(gene_counts, file.path(output_dir, paste0(data_type, "_gene_level_counts.tsv")))
+
+
+# TO DO, use it to replace merge_kallisto and merge rsem
+#txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
+
+# Output gene level abundance
+
+# Output gene level counts
