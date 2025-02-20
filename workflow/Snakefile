@@ -34,7 +34,7 @@ include: "rules/quantification.smk"
 include: "rules/rsem.smk"
 include: "rules/diffexp.smk"
 include: "rules/plots.smk"
-include: "rules/splicing.smk"
+#include: "rules/splicing.smk"
 
 #############################
 ## Target rules
@@ -43,7 +43,7 @@ include: "rules/splicing.smk"
 rule all:
     input:
         bedgraphs = expand(resultdir+"/genomecov/{sample}.bedgraph", sample=SAMPLES),
-        rMATS = expand(resultdir+"/rmats/{comp}/filtered/SE.tsv", comp=comparisons),
+        #rMATS = expand(resultdir+"/rmats/{comp}/filtered/SE.tsv", comp=comparisons),
         pca = resultdir+"/pca/pca.svg", # pca.py script specific for NC vs KD conditions; Modify as needed,
         multiqc = resultdir+"/multiqc/multiqc_report.html",
         volcano_plot_kallisto = expand(resultdir+"/deseq2/{comp}_kallisto.svg", comp=comparisons),
