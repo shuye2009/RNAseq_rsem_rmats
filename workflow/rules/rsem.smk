@@ -34,7 +34,7 @@ rule rsem_count:
         gene = resultdir+"/RSEM/{sample}/{sample}.genes.results",
         isoform = resultdir+"/RSEM/{sample}/{sample}.isoforms.results"
     params:
-        stranded = config["stranded"] ,
+        stranded = config["stranded"],
         prefixOut = resultdir+"/RSEM/{sample}/{sample}",
         rsem_index = indexdir + "/" + index_prefix
     log:

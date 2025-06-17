@@ -52,6 +52,7 @@ rule kallisto_quant:
         tsv = resultdir+"/kallisto/{sample}/abundance.tsv",
         h5 = resultdir+"/kallisto/{sample}/abundance.h5"
     params:
+        stranded = config["stranded"],
         bootstrap = "50",
         outdir = resultdir+"/kallisto/{sample}"
     threads:
@@ -72,6 +73,7 @@ rule kallisto_quant:
         "--output-dir={params.outdir} "
         "--bootstrap-samples={params.bootstrap} "
         "--threads={threads} "
+        "--rf-stranded "
         "{input.fq1} {input.fq2} "
         "&> {log}"
 
