@@ -53,6 +53,7 @@ rule kallisto_quant:
         h5 = resultdir+"/kallisto/{sample}/abundance.h5"
     params:
         stranded = config["stranded"],
+        stranded = config["stranded"],
         bootstrap = "50",
         outdir = resultdir+"/kallisto/{sample}"
     threads:
