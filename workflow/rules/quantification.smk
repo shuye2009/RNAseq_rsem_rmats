@@ -52,6 +52,7 @@ rule kallisto_quant:
         tsv = resultdir+"/kallisto/{sample}/abundance.tsv",
         h5 = resultdir+"/kallisto/{sample}/abundance.h5"
     params:
+        stranded = config["stranded"],
         bootstrap = "50",
         outdir = resultdir+"/kallisto/{sample}"
     threads:
@@ -66,14 +67,41 @@ rule kallisto_quant:
         mem_mb = 16000,
         runtime = 120
     shell:
-        "kallisto quant "
-        "--bias "
-        "--index={input.idx} "
-        "--output-dir={params.outdir} "
-        "--bootstrap-samples={params.bootstrap} "
-        "--threads={threads} "
-        "{input.fq1} {input.fq2} "
-        "&> {log}"
+        """
+        if [ {params.stranded} != none ]; then
+            if [ {params.stranded} == reverse ]; then
+                kallisto quant
+                --bias \
+                --index={input.idx} \
+                --output-dir={params.outdir} \
+                --bootstrap-samples={params.bootstrap} \
+                --threads={threads} \
+                --rf-stranded \
+                {input.fq1} {input.fq2} \
+                &> {log}
+            else
+                kallisto quant
+                --bias \
+                --index={input.idx} \
+                --output-dir={params.outdir} \
+                --bootstrap-samples={params.bootstrap} \
+                --threads={threads} \
+                --fr-stranded \
+                {input.fq1} {input.fq2} \
+                &> {log}
+            fi 
+        else 
+            kallisto quant \
+            --bias \
+            --index={input.idx} \
+            --output-dir={params.outdir} \
+            --bootstrap-samples={params.bootstrap} \
+            --threads={threads} \
+            {input.fq1} {input.fq2} \
+            &> {log}
+        fi
+        
+        """
 
 
 rule tx2gene:
