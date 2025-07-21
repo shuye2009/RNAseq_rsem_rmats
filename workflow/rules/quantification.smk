@@ -33,7 +33,7 @@ rule kallisto_index:
     conda:
         "kallisto-0.48.0"
     resources:
-        mem_mb = 4000,
+        mem_mb = 30000,
         runtime = 120
     shell:
         "kallisto index "
@@ -53,7 +53,6 @@ rule kallisto_quant:
         h5 = resultdir+"/kallisto/{sample}/abundance.h5"
     params:
         stranded = config["stranded"],
-        stranded = config["stranded"],
         bootstrap = "50",
         outdir = resultdir+"/kallisto/{sample}"
     threads:
@@ -65,13 +64,13 @@ rule kallisto_quant:
     conda:
         "kallisto-0.48.0"
     resources:
-        mem_mb = 16000,
+        mem_mb = 30000,
         runtime = 120
     shell:
         """
         if [ {params.stranded} != none ]; then
             if [ {params.stranded} == reverse ]; then
-                kallisto quant
+                kallisto quant \
                 --bias \
                 --index={input.idx} \
                 --output-dir={params.outdir} \

@@ -40,7 +40,7 @@ id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 
 
 # Get the h5 files for all conditions
-#if(data_type == "kalliston"){
+#if(data_type == "kallisto"){
 #    files <- file.path(data_dir, samples, "abundance.h5")
 #}else if(data_type == "rsem"){
 #    files <- file.path(data_dir, samples, paste0(samples,".isoforms.results"))
@@ -48,7 +48,6 @@ id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 
 names(files) <- samples
 txi.data <- tximport(files, type=data_type, tx2gene=tx2gene) # for gene differential analysis
-# txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
 
 # Output gene level abundance
 gene_abundance <- txi.data$abundance
@@ -66,8 +65,13 @@ write_tsv(gene_counts, file.path(output_dir, paste0(data_type, "_gene_level_coun
 
 
 # TO DO, use it to replace merge_kallisto and merge rsem
-#txi.data <- tximport(files, type=data_type, txOut=TRUE) # for transcript differential analysis
+txi.data <- tximport(files, type=data_type, txIn=TRUE, txOut=TRUE) # for transcript differential analysis
 
-# Output gene level abundance
+# Output transcript level abundance
+transcript_abundance <- txi.data$abundance
+write_tsv(transcript_abundance, file.path(output_dir, paste0(data_type, "_isoform_level_abundance.tsv")))
 
-# Output gene level counts
+# Output transcript level counts
+transcript_counts <- txi.data$counts
+write_tsv(transcript_counts, file.path(output_dir, paste0(data_type, "_isoform_level_counts.tsv")))
+

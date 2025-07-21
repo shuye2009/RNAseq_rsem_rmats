@@ -77,6 +77,14 @@
         "ntasks-per-node" : 8, # Request n cores be allocated per node.
     },
 
+    "kallisto_index" :
+    {
+        "partition" : "himem",
+        "time" : "10:00:00", # time limit for each job
+        "memory" : "30G",
+        "ntasks-per-node" : 10, # Request n cores be allocated per node.
+    },
+
     "kallisto_quant" :
     {
         "partition" : "himem",
