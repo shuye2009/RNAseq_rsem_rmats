@@ -33,7 +33,7 @@ rule kallisto_index:
     conda:
         "kallisto-0.48.0"
     resources:
-        mem_mb = 30000,
+        mem_mb = 100000,
         runtime = 120
     shell:
         "kallisto index "

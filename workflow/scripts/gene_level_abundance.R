@@ -47,17 +47,20 @@ id2name <- as.data.frame(read_tsv(gene_file, col_names=c('GENEID', 'GENENAME')))
 #}
 
 names(files) <- samples
+message("Gene level calculation")
 txi.data <- tximport(files, type=data_type, tx2gene=tx2gene) # for gene differential analysis
-
+head(txi.data)
 # Output gene level abundance
-gene_abundance <- txi.data$abundance
+message("Gene level abundance calculation")
+gene_abundance <- as.data.frame(txi.data$abundance)
 gene_id <- data.frame(GENEID = row.names(gene_abundance))
 gene_name <- merge(id2name, gene_id)
 gene_abundance <- cbind(gene_name, gene_abundance)
 write_tsv(gene_abundance, file.path(output_dir, paste0(data_type, "_gene_level_abundance.tsv")))
 
 # Output gene level counts
-gene_counts <- txi.data$counts
+message("Gene level counts calculation")
+gene_counts <- as.data.frame(txi.data$counts)
 gene_id <- data.frame(GENEID = row.names(gene_counts))
 gene_name <- merge(id2name, gene_id)
 gene_counts <- cbind(gene_name, gene_counts)
@@ -65,13 +68,17 @@ write_tsv(gene_counts, file.path(output_dir, paste0(data_type, "_gene_level_coun
 
 
 # TO DO, use it to replace merge_kallisto and merge rsem
+message("Isoform level calculation")
 txi.data <- tximport(files, type=data_type, txIn=TRUE, txOut=TRUE) # for transcript differential analysis
-
-# Output transcript level abundance
-transcript_abundance <- txi.data$abundance
+head(txi.data)
+# Output transcript level abundance 
+message("Isoform level abundance calculation")
+transcript_abundance <- as.data.frame(txi.data$abundance)
 write_tsv(transcript_abundance, file.path(output_dir, paste0(data_type, "_isoform_level_abundance.tsv")))
 
 # Output transcript level counts
-transcript_counts <- txi.data$counts
+message("Isoform level counts calculation")
+transcript_counts <- as.data.frame(txi.data$counts)
 write_tsv(transcript_counts, file.path(output_dir, paste0(data_type, "_isoform_level_counts.tsv")))
 
+message("Gene and isoform level calculation completed")

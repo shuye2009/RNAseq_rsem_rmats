@@ -79,9 +79,9 @@
 
     "kallisto_index" :
     {
-        "partition" : "himem",
+        "partition" : "veryhimem",
         "time" : "10:00:00", # time limit for each job
-        "memory" : "30G",
+        "memory" : "100G",
         "ntasks-per-node" : 10, # Request n cores be allocated per node.
     },
 
