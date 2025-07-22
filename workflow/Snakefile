@@ -44,10 +44,7 @@ rule all:
     input:
         bedgraphs = expand(resultdir+"/genomecov/{sample}.bedgraph", sample=SAMPLES),
         #rMATS = expand(resultdir+"/rmats/{comp}/filtered/SE.tsv", comp=comparisons),
-        #pca = resultdir+"/pca/pca.svg", # pca.py script specific for NC vs KD conditions; Modify as needed,
         #multiqc = resultdir+"/multiqc/multiqc_report.html",
-        #volcano_plot_kallisto = expand(resultdir+"/deseq2/{comp}_kallisto.svg", comp=comparisons),
-        volcano_plot_rsem = expand(resultdir+"/deseq2/{comp}_rsem.svg", comp=comparisons),
         #kallisto_quant = resultdir+"/deseq2/kallisto_gene_level_abundance.tsv",
         rsem_quant = resultdir+"/deseq2/rsem_gene_level_abundance.tsv",
         #GO = expand(resultdir+"/GO/GO_{comp}_{change}.svg", comp=comparisons, change=['up','down']) # NEED INTERNET CONNECTION

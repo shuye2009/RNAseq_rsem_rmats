@@ -121,20 +121,3 @@ rule tx2gene:
         "../scripts/tx2gene.py"
        
 
-## Isoform level merged table
-rule merge_kallisto_quant:
-    input:
-        quant = expand(rules.kallisto_quant.output.tsv, sample=SAMPLES),
-        tx2gene = rules.tx2gene.output.tsv,
-        gtf = config["path"]["genome_gtf"]
-    output:
-        tpm = resultdir+"/kallisto/tpm_kallisto.tsv"
-    message: 
-        "Merge kallisto quantification results into one dataframe for further analysis."
-    conda:
-        "polars-0.20.7"
-    resources:
-        mem_mb = 8000,
-        runtime = 120
-    script:
-        "../scripts/merge_kallisto_quant.py"

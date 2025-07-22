@@ -56,20 +56,3 @@ rule rsem_count:
         "--strandedness {params.stranded} "
         "{input.bam} {params.rsem_index} {params.prefixOut}"
 
-    
-rule merge_rsem:
-    input:
-        quant = expand(rules.rsem_count.output.isoform, sample=SAMPLES),
-        tx2gene = rules.tx2gene.output.tsv,
-        gtf = config["path"]["genome_gtf"]
-    output:
-        tpm = resultdir+"/RSEM/rsem_isoform_tpm.tsv"
-    message: 
-        "Merge RSEM isoform quantification results into one dataframe for further analysis."
-    conda:
-        "polars-0.20.7"
-    resources:
-        mem_mb = 8000,
-        runtime = 120
-    script:
-        "../scripts/merge_rsem_quant.py"
